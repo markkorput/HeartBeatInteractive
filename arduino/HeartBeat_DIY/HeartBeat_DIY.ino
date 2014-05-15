@@ -22,8 +22,8 @@ void loop(){
     
   data[0] = analogRead(0);//now write the next analog value to data[0]
   
-  mapped = map(data[0], 0, 1023, 0, 600);
-  Serial.println(mapped);//send over the current value to the processing sketch, but scale it to match the screen height
+//  mapped = map(data[0], 0, 1023, 0, 600);
+  Serial.println(data[0]);//send over the current value to the processing sketch, but scale it to match the screen height
 
   delay(5);//delay in here is important, we need enough samples to catch an entire waveform, so at least 1 sec of samples should be tored in data[0], 
   //so 5ms x 200 = 1000, we're good

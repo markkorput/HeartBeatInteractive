@@ -8,7 +8,6 @@ int lf = 10;      // ASCII linefeed
 
 void setup() 
 {
-
   size(displayWidth-100, 600);//screen size setup, display width is read into teh program, and I
   //clipped it a little bit.  The screen height is set to be 600, which matches the scaled data,
   //the arduino will send over
@@ -25,13 +24,15 @@ void draw(){
 }
 
 void serialEvent(Serial myPort) { //this is called whenever data is sent over by the arduino
-
   inString = myPort.readString();//read in the new data, and store in inString
   inString = trim(inString);//get rid of any crap that isn't numbers, like the line feed
+  println(inString);
   val = int(inString);//convert the string into a number we can use
+
   strokeWeight(5);//beef up our white line
   stroke(255, 255, 255);//make the line white
   
+  val = (int)map(val, 0, 400, 0, height);
   //here's where we draw the line on the screen
   //we need to draw the line from one point to the next
   //so we have the point we last drew, to the new point
@@ -39,11 +40,11 @@ void serialEvent(Serial myPort) { //this is called whenever data is sent over by
   //y is up and down, BUT 0 is the upmost point, 
   //so we subtract our value from the screen height to invert
   //screen increment, is how we progress teh line through the screen
-  line(old_x, old_y, screen_increment, 600-val);
+  line(old_x, old_y, screen_increment, height-val);
   
   //store the current x, y as the old x,y, so it is used next time
   old_x = screen_increment;
-  old_y = 600-val;
+  old_y = height-val;
   
   //increment the x coordinate,  you can play with this value to speed things up
   screen_increment=screen_increment+2;
