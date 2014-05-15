@@ -1,6 +1,5 @@
 
 
-
 volatile int rate[10];                    // array to hold last ten IBI values
 volatile unsigned long sampleCounter = 0;          // used to determine pulse timing
 volatile unsigned long lastBeatTime = 0;           // used to find IBI
@@ -11,14 +10,24 @@ volatile int amp = 100;                   // used to hold amplitude of pulse wav
 volatile boolean firstBeat = true;        // used to seed rate array so we startup with reasonable BPM
 volatile boolean secondBeat = false;      // used to seed rate array so we startup with reasonable BPM
 
-void interruptSetup(){     
-  // Initializes Timer2 to throw an interrupt every 2mS.
-  TCCR2A = 0x02;     // DISABLE PWM ON DIGITAL PINS 3 AND 11, AND GO INTO CTC MODE
-  TCCR2B = 0x06;     // DON'T FORCE COMPARE, 256 PRESCALER 
-  OCR2A = 0X7C;      // SET THE TOP OF THE COUNT TO 124 FOR 500Hz SAMPLE RATE
-  TIMSK2 = 0x02;     // ENABLE INTERRUPT ON MATCH BETWEEN TIMER2 AND OCR2A
-  sei();             // MAKE SURE GLOBAL INTERRUPTS ARE ENABLED      
-} 
+// This interruptSetup works for Arduino Leonardo
+void interruptSetup(){
+  TCCR0A = 0x02;
+  TCCR0B = 0x04; 
+  OCR0A = 0x7C; 
+  TIMSK0 = 0x02; 
+  sei();
+}
+
+//// The version below works for the arduino UNO
+//void interruptSetup(){     
+//  // Initializes Timer2 to throw an interrupt every 2mS.
+//  TCCR2A = 0x02;     // DISABLE PWM ON DIGITAL PINS 3 AND 11, AND GO INTO CTC MODE
+//  TCCR2B = 0x06;     // DON'T FORCE COMPARE, 256 PRESCALER 
+//  OCR2A = 0X7C;      // SET THE TOP OF THE COUNT TO 124 FOR 500Hz SAMPLE RATE
+//  TIMSK2 = 0x02;     // ENABLE INTERRUPT ON MATCH BETWEEN TIMER2 AND OCR2A
+//  sei();             // MAKE SURE GLOBAL INTERRUPTS ARE ENABLED      
+//} 
 
 
 // THIS IS THE TIMER 2 INTERRUPT SERVICE ROUTINE. 
