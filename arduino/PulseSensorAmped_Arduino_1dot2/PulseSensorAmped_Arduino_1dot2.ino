@@ -47,26 +47,41 @@ void setup(){
   pinMode(blinkPin,OUTPUT);         // pin that will blink to your heartbeat!
   pinMode(fadePin,OUTPUT);          // pin that will fade to your heartbeat!
   Serial.begin(115200);             // we agree to talk fast!
-  interruptSetup();                 // sets up to read Pulse Sensor signal every 2mS 
+  
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for Leonardo only
+  }
+  
+//  interruptSetup();                 // sets up to read Pulse Sensor signal every 2mS 
    // UN-COMMENT THE NEXT LINE IF YOU ARE POWERING The Pulse Sensor AT LOW VOLTAGE, 
    // AND APPLY THAT VOLTAGE TO THE A-REF PIN
    //analogReference(EXTERNAL);   
 }
 
 
+unsigned long lastTime = 0;
+unsigned long lastSerial = 0;
 
 void loop(){
-  sendDataToProcessing('S', Signal);     // send Processing the raw Pulse Sensor data
-  if (QS == true){                       // Quantified Self flag is true when arduino finds a heartbeat
-        fadeRate = 255;                  // Set 'fadeRate' Variable to 255 to fade LED with pulse
-        sendDataToProcessing('B',BPM);   // send heart rate with a 'B' prefix
-        sendDataToProcessing('Q',IBI);   // send time between beats with a 'Q' prefix
-        QS = false;                      // reset the Quantified Self flag for next time    
-     }
+  unsigned long curTime = millis();
+  interrupter(curTime - lastTime);
+  lastTime = curTime;
   
-  ledFadeToBeat();
-  
-  delay(20);                             //  take a break
+  if(curTime - lastSerial > 20){
+
+    sendDataToProcessing('S', Signal);     // send Processing the raw Pulse Sensor data
+    if (QS == true){                       // Quantified Self flag is true when arduino finds a heartbeat
+          fadeRate = 255;                  // Set 'fadeRate' Variable to 255 to fade LED with pulse
+          sendDataToProcessing('B',BPM);   // send heart rate with a 'B' prefix
+          sendDataToProcessing('Q',IBI);   // send time between beats with a 'Q' prefix
+          QS = false;                      // reset the Quantified Self flag for next time    
+       }
+    
+    ledFadeToBeat();
+  //  Serial.println("looped");
+  //  delay(20);                             //  take a break
+    lastSerial = curTime;
+  }
 }
 
 
