@@ -9,6 +9,7 @@ void serialEvent(Serial port){
    if (inData.charAt(0) == 'S'){          // leading 'S' for sensor data
      inData = inData.substring(1);        // cut off the leading 'S'
      Sensor = int(inData);                // convert the string to usable int
+     println(Sensor);
    }
    if (inData.charAt(0) == 'B'){          // leading 'B' for BPM data
      inData = inData.substring(1);        // cut off the leading 'B'
