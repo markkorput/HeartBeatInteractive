@@ -5,6 +5,10 @@ int data[200], i, mapped;
 
 void setup(){
   Serial.begin(115200);//for the processing sketch
+
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for Leonardo only
+  }
 }//setup
 
 void loop(){
