@@ -26,7 +26,7 @@ void draw(){
 void serialEvent(Serial myPort) { //this is called whenever data is sent over by the arduino
   inString = myPort.readString();//read in the new data, and store in inString
   inString = trim(inString);//get rid of any crap that isn't numbers, like the line feed
-  println(inString);
+//  println(inString);
   val = int(inString);//convert the string into a number we can use
 
   strokeWeight(5);//beef up our white line

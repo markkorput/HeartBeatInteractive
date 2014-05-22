@@ -10,7 +10,10 @@ import processing.serial.*;
 PFont font;
 Scrollbar scaleBar;
 
-Serial port;     
+Serial port;   
+int serialListIndex = 2; // use third serial device
+int serialBaudRate = 115200;
+
 
 int Sensor;      // HOLDS PULSE SENSOR DATA FROM ARDUINO
 int IBI;         // HOLDS TIME BETWEN HEARTBEATS FROM ARDUINO
@@ -56,7 +59,7 @@ void setup() {
 // GO FIND THE ARDUINO
   println(Serial.list());    // print a list of available serial ports
   // choose the number between the [] that is connected to the Arduino
-  port = new Serial(this, Serial.list()[0], 115200);  // make sure Arduino is talking serial at this baud rate
+  port = new Serial(this, Serial.list()[serialListIndex], serialBaudRate);  // make sure Arduino is talking serial at this baud rate
   port.clear();            // flush buffer
   port.bufferUntil('\n');  // set buffer full flag on receipt of carriage return
 }
