@@ -1,0 +1,30 @@
+<Widget>
+    <Kind>8</Kind>
+    <Name>BPM</Name>
+    <Value>156.199996948</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>BEATING</Name>
+    <Value>1</Value>
+</Widget>
+<Widget>
+    <Kind>12</Kind>
+    <Name>MESSAGE</Name>
+    <Value>heartbeat/beat</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>OSC_OUT_ENABLE</Name>
+    <Value>1</Value>
+</Widget>
+<Widget>
+    <Kind>12</Kind>
+    <Name>OSCIP</Name>
+    <Value>127.0.0.1</Value>
+</Widget>
+<Widget>
+    <Kind>12</Kind>
+    <Name>OSCPORT</Name>
+    <Value>12346</Value>
+</Widget>
