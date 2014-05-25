@@ -1,0 +1,1 @@
+Download openframeworks and put this inside the apps/myApps folder so all references to external libraries will work.
