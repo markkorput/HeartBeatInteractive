@@ -11,7 +11,7 @@
 <Widget>
     <Kind>12</Kind>
     <Name>MESSAGE</Name>
-    <Value>heartbeat/beat</Value>
+    <Value>/heartbeat/beat</Value>
 </Widget>
 <Widget>
     <Kind>2</Kind>
@@ -26,5 +26,5 @@
 <Widget>
     <Kind>12</Kind>
     <Name>OSCPORT</Name>
-    <Value>12346..&#x1B;..........</Value>
+    <Value>12346</Value>
 </Widget>

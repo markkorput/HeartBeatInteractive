@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofxUI.h"
 #include "ofEvents.h"
+#include "ofxOsc.h"
 
 class ofApp : public ofBaseApp{
 
@@ -22,19 +23,23 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
 		
     ofxUICanvas *gui;
+    float lastBeat;
+    ofEvent<void> beatEvent;
+    ofxOscSender oscSender;
 
     void exit();
     void guiEvent(ofxUIEventArgs &e);
-    
-    
-    float lastBeat;
     
     int currentBPM();
     float currentTimeBetweenBeats();
     float nextBeatTime();
     float timeSinceLastBeat();
-    
-    ofEvent<void> beatEvent;
+    string getOscPort();
+    string getOscIP();
+    string getOscMessage();
+    bool getOscEnabled();
+
     void sendOscBeat();
+    void setupOscSender();
 };
 

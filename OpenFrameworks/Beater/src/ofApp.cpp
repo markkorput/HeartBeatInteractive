@@ -8,7 +8,7 @@ void ofApp::setup(){
     gui->addNumberDialer("BPM", 1, 300, 120, 1);
 //    gui->addSlider("BPM",1.0,300.0,120.0);
     gui->addToggle("BEATING", true);
-    gui->addTextInput("MESSAGE", "heartbeat/beat");
+    gui->addTextInput("MESSAGE", "/heartbeat/beat");
 
     gui->addToggle("OSC_OUT_ENABLE", true);
     gui->addTextInput("OSCIP", "127.0.0.1");
@@ -18,9 +18,9 @@ void ofApp::setup(){
     gui->autoSizeToFitWidgets();
     gui->loadSettings("settings.xml");
 
-    ofAddListener(beatEvent, this, &ofApp::sendOscBeat);
-    
     lastBeat = 0.0;
+    
+    setupOscSender();
 }
 
 //--------------------------------------------------------------
@@ -97,6 +97,11 @@ void ofApp::guiEvent(ofxUIEventArgs &e)
         ofxUISlider *slider = e.getSlider();
         ofBackground(slider->getScaledValue());
     }
+
+    // if the user changed to osc port or osc host value, immediately re-initialize the oscSender to the new values
+    if(e.getName() == "OSCPORT" || e.getName() == "OSCIP" || e.getName() == "OSC_OUT_ENABLE"){
+        setupOscSender();
+    }
 }
 
 
@@ -116,14 +121,44 @@ float ofApp::nextBeatTime(){
 
 float ofApp::timeSinceLastBeat(){
     return ofGetElapsedTimef() - lastBeat;
+    
 }
+
+string ofApp::getOscPort(){
+    return ((ofxUITextInput*)gui->getWidget("OSCPORT"))->getTextString();
+}
+
+string ofApp::getOscIP(){
+    return ((ofxUITextInput*)gui->getWidget("OSCIP"))->getTextString();
+}
+
+string ofApp::getOscMessage(){
+    return ((ofxUITextInput*)gui->getWidget("MESSAGE"))->getTextString();
+}
+
+bool ofApp::getOscEnabled(){
+    return ((ofxUIToggle*)gui->getWidget("OSC_OUT_ENABLE"))->getValue();
+}
+
+
 
 //--------------------------------------------------------------
 void ofApp::sendOscBeat(){
-    ofxUITextInput *portInput = (ofxUITextInput*)gui->getWidget("OSCPORT");
-    portInput->setTextString(portInput->getTextString() + ".");
+    ofxOscMessage msg;
+	msg.setAddress(getOscMessage());
+	oscSender.sendMessage(msg);
 }
 
-                        
-                        
+//--------------------------------------------------------------
+void ofApp::setupOscSender(){
+    oscSender.setup(getOscIP(), ofToInt(getOscPort()));
+
+    if(getOscEnabled()){
+        ofAddListener(beatEvent, this, &ofApp::sendOscBeat);
+    } else {
+        ofRemoveListener(beatEvent, this, &ofApp::sendOscBeat);
+    }
+}
+
+
                         
