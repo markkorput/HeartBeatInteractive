@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "ofxUI.h"
+#include "ofEvents.h"
 
 class ofApp : public ofBaseApp{
 
@@ -32,4 +33,8 @@ class ofApp : public ofBaseApp{
     float currentTimeBetweenBeats();
     float nextBeatTime();
     float timeSinceLastBeat();
+    
+    ofEvent<void> beatEvent;
+    void sendOscBeat();
 };
+

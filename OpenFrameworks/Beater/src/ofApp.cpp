@@ -18,12 +18,15 @@ void ofApp::setup(){
     gui->autoSizeToFitWidgets();
     gui->loadSettings("settings.xml");
 
+    ofAddListener(beatEvent, this, &ofApp::sendOscBeat);
+    
     lastBeat = 0.0;
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
     if(ofGetElapsedTimef() > nextBeatTime()){
+        ofNotifyEvent(beatEvent);
         lastBeat = ofGetElapsedTimef();
     }
 }
@@ -114,8 +117,13 @@ float ofApp::nextBeatTime(){
 float ofApp::timeSinceLastBeat(){
     return ofGetElapsedTimef() - lastBeat;
 }
-                        
-                        
+
+//--------------------------------------------------------------
+void ofApp::sendOscBeat(){
+    ofxUITextInput *portInput = (ofxUITextInput*)gui->getWidget("OSCPORT");
+    portInput->setTextString(portInput->getTextString() + ".");
+}
+
                         
                         
                         
