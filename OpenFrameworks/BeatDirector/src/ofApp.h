@@ -12,6 +12,8 @@
 #include "Poco/RegularExpression.h"
 //using Poco::RegularExpression;
 
+#include "ClipTimer.h"
+
 struct videoPosEventArgs {
     unsigned int layer, clip;
     float pos;
@@ -42,6 +44,7 @@ class ofApp : public ofBaseApp{
         ofxOscReceiver oscReceiver;
         vector<string *> oscInLog;
         ofEvent<videoPosEventArgs> videoPosEvent;
+        ClipTimer clipTimer;
 
         void exit();
         void guiEvent(ofxUIEventArgs &e);

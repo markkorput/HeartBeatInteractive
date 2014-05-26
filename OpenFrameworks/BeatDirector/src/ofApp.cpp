@@ -40,23 +40,24 @@ void ofApp::handleIncomingOsc(){
             oscReceiver.getNextMessage(&m);
 
         // LOG all incoming osc messages
-            string params = "";
-            for(int i = 0; i < m.getNumArgs(); i++){
-                if(i > 0) params += ", ";
-
-                if(m.getArgTypeName(i) == "float")
-                    params += ofToString(m.getArgAsFloat(i));
-                else
-                    params += m.getArgAsString(i);
-            }
-
-            ofLogVerbose() << "OSC IN - " << m.getAddress() << " (" << params << ")";
+//            string params = "";
+//            for(int i = 0; i < m.getNumArgs(); i++){
+//                if(i > 0) params += ", ";
+//
+//                if(m.getArgTypeName(i) == "float")
+//                    params += ofToString(m.getArgAsFloat(i));
+//                else
+//                    params += m.getArgAsString(i);
+//            }
+//
+//            ofLogVerbose() << "OSC IN - " << m.getAddress() << " (" << params << ")";
  
         // deal with video position messages
-            Poco::RegularExpression re("^/layer([0-9]+)/clip([0-9]+)/video/position/values$");
+            Poco::RegularExpression re1("^/layer([0-9]+)/clip([0-9]+)/video/position/values$");
+            Poco::RegularExpression re2("^/layer([0-9]+)/clip([0-9]+)/audio/position/values$");
             std::vector<std::string> vec;
 
-            if(re.split(m.getAddress(), 0, vec) == 3){ // three matches? (the whole matching substring, the layer number match and the clip number match)
+            if(re1.split(m.getAddress(), 0, vec) == 3 || re2.split(m.getAddress(), 0, vec) == 3){ // three matches? (the whole matching substring, the layer number match and the clip number match)
                 // ofLogVerbose() << "VIDEO POS (layer: " << vec[1] << ", clip: " << vec[2] << ") = " << ofToString(m.getArgAsFloat(0));
                 videoPosEventArgs args;
                 args.layer = ofToInt(vec[1]);
@@ -68,8 +69,10 @@ void ofApp::handleIncomingOsc(){
 }
 
 void ofApp::onVideoPos(videoPosEventArgs & args){
-    ofLogVerbose() << "VIDEO POS (layer: " << ofToString(args.layer) << ", clip: " << ofToString(args.clip) << ") = " << ofToString(args.pos);
+//    ofLogVerbose() << "VIDEO POS (layer: " << ofToString(args.layer) << ", clip: " << ofToString(args.clip) << ") = " << ofToString(args.pos);
 
+    //    clipTimer.init();
+    clipTimer.registerPos(args.pos);
     
 }
 
