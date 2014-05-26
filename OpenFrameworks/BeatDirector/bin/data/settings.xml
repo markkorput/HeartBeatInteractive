@@ -1,0 +1,25 @@
+<Widget>
+    <Kind>2</Kind>
+    <Name>OSC_IN</Name>
+    <Value>1</Value>
+</Widget>
+<Widget>
+    <Kind>12</Kind>
+    <Name>OSC_IN_PORT</Name>
+    <Value>12346</Value>
+</Widget>
+<Widget>
+    <Kind>2</Kind>
+    <Name>OSC_OUT</Name>
+    <Value>1</Value>
+</Widget>
+<Widget>
+    <Kind>12</Kind>
+    <Name>OSC_OUT_IP</Name>
+    <Value>127.0.0.1</Value>
+</Widget>
+<Widget>
+    <Kind>12</Kind>
+    <Name>OSC_OUT_PORT</Name>
+    <Value></Value>
+</Widget>

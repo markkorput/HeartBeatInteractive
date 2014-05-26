@@ -1,6 +1,9 @@
 #pragma once
 
 #include "ofMain.h"
+#include "ofxUI.h"
+#include "ofEvents.h"
+#include "ofxOsc.h"
 
 class ofApp : public ofBaseApp{
 
@@ -18,5 +21,21 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-		
+
+    ofxUICanvas *gui;
+    ofxOscSender oscSender;
+    ofxOscReceiver oscReceiver;
+
+    void exit();
+    void guiEvent(ofxUIEventArgs &e);
+    void setupOscConnections();
+    void setupOscOut();
+    void setupOscIn();
+
+    bool getOscInEnabled();
+    bool getOscOutEnabled();
+    string getOscInPort();
+    string getOscOutPort();
+    string getOscOutIP();
+
 };
