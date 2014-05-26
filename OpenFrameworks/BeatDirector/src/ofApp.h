@@ -5,12 +5,25 @@
 #include "ofEvents.h"
 #include "ofxOsc.h"
 
+
+// we need to include the RegularExpression
+// header file and say that we are using that
+// name space
+#include "Poco/RegularExpression.h"
+//using Poco::RegularExpression;
+
+struct videoPosEventArgs {
+    unsigned int layer, clip;
+    float pos;
+};
+
 class ofApp : public ofBaseApp{
 
 	public:
 		void setup();
 		void update();
         void handleIncomingOsc();
+        void onVideoPos(videoPosEventArgs & args);
 		void draw();
 
 		void keyPressed(int key);
@@ -28,6 +41,7 @@ class ofApp : public ofBaseApp{
         ofxOscSender oscSender;
         ofxOscReceiver oscReceiver;
         vector<string *> oscInLog;
+        ofEvent<videoPosEventArgs> videoPosEvent;
 
         void exit();
         void guiEvent(ofxUIEventArgs &e);

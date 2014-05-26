@@ -18,11 +18,14 @@ void ofApp::setup(){
 
     gui->addTextArea("OSC_IN_LOG", "");
     
-    ofAddListener(gui->newGUIEvent, this, &ofApp::guiEvent);
+
     gui->autoSizeToFitWidgets();
     gui->loadSettings("settings.xml");
 
     setupOscConnections();
+
+    ofAddListener(gui->newGUIEvent, this, &ofApp::guiEvent);
+    ofAddListener(videoPosEvent, this, &ofApp::onVideoPos);
 }
 
 //--------------------------------------------------------------
@@ -33,30 +36,41 @@ void ofApp::update(){
 void ofApp::handleIncomingOsc(){
     while(oscReceiver.hasWaitingMessages()){
         // get the next message
-		ofxOscMessage m;
-		oscReceiver.getNextMessage(&m);
+            ofxOscMessage m;
+            oscReceiver.getNextMessage(&m);
 
-        string params = "";
-        for(int i = 0; i < m.getNumArgs(); i++){
-            if(i > 0) params += ", ";
+        // LOG all incoming osc messages
+            string params = "";
+            for(int i = 0; i < m.getNumArgs(); i++){
+                if(i > 0) params += ", ";
 
-            if(m.getArgTypeName(i) == "float")
-                params += ofToString(m.getArgAsFloat(i));
-            else
-                params += m.getArgAsString(i);
-        }
+                if(m.getArgTypeName(i) == "float")
+                    params += ofToString(m.getArgAsFloat(i));
+                else
+                    params += m.getArgAsString(i);
+            }
 
-        ofLogVerbose() << "OSC IN - " << m.getAddress() << " (" << params << ")";
-        
+            ofLogVerbose() << "OSC IN - " << m.getAddress() << " (" << params << ")";
+ 
+        // deal with video position messages
+            Poco::RegularExpression re("^/layer([0-9]+)/clip([0-9]+)/video/position/values$");
+            std::vector<std::string> vec;
 
-//		// check for mouse moved message
-//		if(m.getAddress() == "/mouse/position"){
-//			// both the arguments are int32's
-//			mouseX = m.getArgAsInt32(0);
-//			mouseY = m.getArgAsInt32(1);
-//		}
-//        ofxUITextArea *a;
+            if(re.split(m.getAddress(), 0, vec) == 3){ // three matches? (the whole matching substring, the layer number match and the clip number match)
+                // ofLogVerbose() << "VIDEO POS (layer: " << vec[1] << ", clip: " << vec[2] << ") = " << ofToString(m.getArgAsFloat(0));
+                videoPosEventArgs args;
+                args.layer = ofToInt(vec[1]);
+                args.clip = ofToInt(vec[2]);
+                args.pos = m.getArgAsFloat(0);
+                ofNotifyEvent(videoPosEvent, args);
+            }
     }
+}
+
+void ofApp::onVideoPos(videoPosEventArgs & args){
+    ofLogVerbose() << "VIDEO POS (layer: " << ofToString(args.layer) << ", clip: " << ofToString(args.clip) << ") = " << ofToString(args.pos);
+
+    
 }
 
 //--------------------------------------------------------------
