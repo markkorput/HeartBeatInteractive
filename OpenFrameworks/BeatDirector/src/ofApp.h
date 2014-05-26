@@ -10,6 +10,7 @@ class ofApp : public ofBaseApp{
 	public:
 		void setup();
 		void update();
+        void handleIncomingOsc();
 		void draw();
 
 		void keyPressed(int key);
@@ -22,20 +23,22 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
 
-    ofxUICanvas *gui;
-    ofxOscSender oscSender;
-    ofxOscReceiver oscReceiver;
+        // variables
+        ofxUICanvas *gui;
+        ofxOscSender oscSender;
+        ofxOscReceiver oscReceiver;
+        vector<string *> oscInLog;
 
-    void exit();
-    void guiEvent(ofxUIEventArgs &e);
-    void setupOscConnections();
-    void setupOscOut();
-    void setupOscIn();
+        void exit();
+        void guiEvent(ofxUIEventArgs &e);
+        void setupOscConnections();
+        void setupOscOut();
+        void setupOscIn();
 
-    bool getOscInEnabled();
-    bool getOscOutEnabled();
-    string getOscInPort();
-    string getOscOutPort();
-    string getOscOutIP();
-
+        // UI helper methods
+        bool getOscInEnabled();
+        bool getOscOutEnabled();
+        string getOscInPort();
+        string getOscOutPort();
+        string getOscOutIP();
 };

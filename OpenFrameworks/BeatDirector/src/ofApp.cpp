@@ -2,7 +2,12 @@
 
 //--------------------------------------------------------------
 void ofApp::setup(){
-    gui = new ofxUICanvas();        //Creates a canvas at (0,0) using the default width
+    // Enable some logging information
+	ofSetLogLevel(OF_LOG_VERBOSE);
+    ofSetWindowShape(300, 600);
+
+    //Creates a canvas at (0,0) using the default width
+    gui = new ofxUICanvas();
 
     gui->addToggle("OSC_IN", true);
     gui->addTextInput("OSC_IN_PORT", "12346");
@@ -16,13 +21,42 @@ void ofApp::setup(){
     ofAddListener(gui->newGUIEvent, this, &ofApp::guiEvent);
     gui->autoSizeToFitWidgets();
     gui->loadSettings("settings.xml");
-    
+
     setupOscConnections();
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
+    if(getOscInEnabled()) handleIncomingOsc();
+}
 
+void ofApp::handleIncomingOsc(){
+    while(oscReceiver.hasWaitingMessages()){
+        // get the next message
+		ofxOscMessage m;
+		oscReceiver.getNextMessage(&m);
+
+        string params = "";
+        for(int i = 0; i < m.getNumArgs(); i++){
+            if(i > 0) params += ", ";
+
+            if(m.getArgTypeName(i) == "float")
+                params += ofToString(m.getArgAsFloat(i));
+            else
+                params += m.getArgAsString(i);
+        }
+
+        ofLogVerbose() << "OSC IN - " << m.getAddress() << " (" << params << ")";
+        
+
+//		// check for mouse moved message
+//		if(m.getAddress() == "/mouse/position"){
+//			// both the arguments are int32's
+//			mouseX = m.getArgAsInt32(0);
+//			mouseY = m.getArgAsInt32(1);
+//		}
+//        ofxUITextArea *a;
+    }
 }
 
 //--------------------------------------------------------------
@@ -45,7 +79,7 @@ void ofApp::guiEvent(ofxUIEventArgs &e)
     }
 
     // if the user changed to osc port or osc host value, immediately re-initialize the oscSender to the new values
-    if(e.getName() == "OSC_IN" || e.getName() == "OSC_IN_IP"){
+    if(e.getName() == "OSC_IN_PORT"){
         setupOscIn();
     }
 }
@@ -56,8 +90,14 @@ void ofApp::setupOscConnections(){
 }
 
 void ofApp::setupOscOut(){
-    oscSender.setup(getOscOutIP(), ofToInt(getOscOutPort()));
-    
+    ofLogNotice("> setupOscOut");
+
+    try{
+        oscSender.setup(getOscOutIP(), ofToInt(getOscOutPort()));
+    } catch (exception & e) {
+        ofLogError() << "Something went wrong while setting up oscSender";
+    }
+        
     if(getOscOutEnabled()){
 //        ofAddListener(beatEvent, this, &ofApp::sendOscBeat);
     } else {
@@ -66,12 +106,12 @@ void ofApp::setupOscOut(){
 }
 
 void ofApp::setupOscIn(){
-    oscReceiver.setup(ofToInt(getOscInPort()));
+    ofLogNotice("> setupOscIn");
 
-    if(getOscInEnabled()){
-        //        ofAddListener(beatEvent, this, &ofApp::sendOscBeat);
-    } else {
-        //        ofRemoveListener(beatEvent, this, &ofApp::sendOscBeat);
+    try{
+        oscReceiver.setup(ofToInt(getOscInPort()));
+    } catch (exception & e) {
+        ofLogError() << "Something went wrong while setting up oscReceiver";
     }
 }
 
