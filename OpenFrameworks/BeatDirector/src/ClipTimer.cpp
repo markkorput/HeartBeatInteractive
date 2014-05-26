@@ -18,6 +18,9 @@ ClipTimer::ClipTimer(unsigned int _layer, unsigned int _clip){
 }
 
 void ClipTimer::init(){
+    layer = 0;
+    clip = 0;
+
     timing1.pos = -1.0;
     timing2.pos = -1.0;
     
@@ -25,9 +28,16 @@ void ClipTimer::init(){
 }
 
 void ClipTimer::init(unsigned int _layer, unsigned int _clip){
+    init();
+    setClip(_layer, _clip);
+}
+
+void ClipTimer::setClip(unsigned int _layer, unsigned int _clip){
+    bool notify = false;
+    if(_layer != layer || _clip != clip) notify = true;
     layer = _layer;
     clip = _clip;
-    init();
+    if(notify) ofNotifyEvent(clipChangeEvent);
 }
 
 std::string ClipTimer::id(){

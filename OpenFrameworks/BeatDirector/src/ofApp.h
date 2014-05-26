@@ -51,6 +51,8 @@ class ofApp : public ofBaseApp{
         void setupOscConnections();
         void setupOscOut();
         void setupOscIn();
+        void onVideoTiming();
+        void onClipChange();
 
         // UI helper methods
         bool getOscInEnabled();

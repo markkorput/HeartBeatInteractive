@@ -24,12 +24,14 @@ class ClipTimer{
         ClipTiming timing1, timing2;
         float extraTime;
         ofEvent<void> gotTimingEvent;
+        ofEvent<void> clipChangeEvent;
     
         ClipTimer();
         ClipTimer(unsigned int _layer, unsigned int _clip);
 
         void init();
         void init(unsigned int _layer, unsigned int _clip);
+        void setClip(unsigned int _layer, unsigned int _clip);
         std::string id();
         bool gotTiming();
         float timingDistance();

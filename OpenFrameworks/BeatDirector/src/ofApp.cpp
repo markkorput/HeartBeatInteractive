@@ -16,6 +16,8 @@ void ofApp::setup(){
     gui->addTextInput("OSC_OUT_IP", "127.0.0.1");
     gui->addTextInput("OSC_OUT_PORT", "12347");
 
+    gui->addLabel("CUR_CLIP", "Current clip");
+    gui->addLabel("CUR_CLIP_ID", "unknown");
     gui->addLabel("CUR_TIME_LABEL", "Elapsed time");
     gui->addLabel("CUR_TIME", "unknown");
     gui->addLabel("CUR_CLIP_TOTAL_TIME_LABEL", "Total clip time");
@@ -32,6 +34,8 @@ void ofApp::setup(){
 
     ofAddListener(gui->newGUIEvent, this, &ofApp::guiEvent);
     ofAddListener(videoPosEvent, this, &ofApp::onVideoPos);
+    ofAddListener(clipTimer.gotTimingEvent, this, &ofApp::onVideoTiming);
+    ofAddListener(clipTimer.clipChangeEvent, this, &ofApp::onClipChange);
 }
 
 //--------------------------------------------------------------
@@ -42,7 +46,9 @@ void ofApp::update(){
 }
 
 void ofApp::handleIncomingOsc(){
-    while(oscReceiver.hasWaitingMessages()){
+    ofxOscMessage m;
+    while(oscReceiver.getNextMessage(&m)){
+//    while(oscReceiver.hasWaitingMessages()){
         // get the next message
             ofxOscMessage m;
             oscReceiver.getNextMessage(&m);
@@ -77,16 +83,14 @@ void ofApp::handleIncomingOsc(){
 }
 
 void ofApp::onVideoPos(videoPosEventArgs & args){
-//    ofLogVerbose() << "VIDEO POS (layer: " << ofToString(args.layer) << ", clip: " << ofToString(args.clip) << ") = " << ofToString(args.pos);
-
-    //    clipTimer.init();
+    // ofLogVerbose() << "VIDEO POS (layer: " << ofToString(args.layer) << ", clip: " << ofToString(args.clip) << ") = " << ofToString(args.pos);
+    
+    clipTimer.setClip(args.layer, args.clip);
     clipTimer.registerPos(args.pos);
-    
-    if(clipTimer.gotTiming()){
-        ((ofxUILabel*)gui->getWidget("CUR_CLIP_TOTAL_TIME"))->setLabel(ofToString(clipTimer.totalClipTime()));
-        ((ofxUILabel*)gui->getWidget("CUR_CLIP_TARGET_END_TIME"))->setLabel(ofToString(clipTimer.targetClipEndTime()));
-    }
-    
+}
+
+void ofApp::onClipChange(){
+    ((ofxUILabel*)gui->getWidget("CUR_CLIP_ID"))->setLabel(ofToString(clipTimer.id()));
 }
 
 //--------------------------------------------------------------
@@ -142,6 +146,13 @@ void ofApp::setupOscIn(){
         oscReceiver.setup(ofToInt(getOscInPort()));
     } catch (exception & e) {
         ofLogError() << "Something went wrong while setting up oscReceiver";
+    }
+}
+
+void ofApp::onVideoTiming(){
+    if(clipTimer.gotTiming()){
+        ((ofxUILabel*)gui->getWidget("CUR_CLIP_TOTAL_TIME"))->setLabel(ofToString(clipTimer.totalClipTime()));
+        ((ofxUILabel*)gui->getWidget("CUR_CLIP_TARGET_END_TIME"))->setLabel(ofToString(clipTimer.targetClipEndTime()));
     }
 }
 
