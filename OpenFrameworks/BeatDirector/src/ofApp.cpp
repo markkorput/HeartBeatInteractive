@@ -16,8 +16,14 @@ void ofApp::setup(){
     gui->addTextInput("OSC_OUT_IP", "127.0.0.1");
     gui->addTextInput("OSC_OUT_PORT", "12347");
 
-    gui->addTextArea("OSC_IN_LOG", "");
+    gui->addLabel("CUR_TIME_LABEL", "Elapsed time");
+    gui->addLabel("CUR_TIME", "unknown");
+    gui->addLabel("CUR_CLIP_TOTAL_TIME_LABEL", "Total clip time");
+    gui->addLabel("CUR_CLIP_TOTAL_TIME", "unknown");
+    gui->addLabel("CUR_CLIP_TARGET_END_TIME_LABEL", "Target clip end time");
+    gui->addLabel("CUR_CLIP_TARGET_END_TIME", "unknown");
     
+    gui->addTextArea("OSC_IN_LOG", "");
 
     gui->autoSizeToFitWidgets();
     gui->loadSettings("settings.xml");
@@ -31,6 +37,8 @@ void ofApp::setup(){
 //--------------------------------------------------------------
 void ofApp::update(){
     if(getOscInEnabled()) handleIncomingOsc();
+
+    ((ofxUILabel*)gui->getWidget("CUR_TIME"))->setLabel(ofToString(ofGetElapsedTimef()));
 }
 
 void ofApp::handleIncomingOsc(){
@@ -74,11 +82,16 @@ void ofApp::onVideoPos(videoPosEventArgs & args){
     //    clipTimer.init();
     clipTimer.registerPos(args.pos);
     
+    if(clipTimer.gotTiming()){
+        ((ofxUILabel*)gui->getWidget("CUR_CLIP_TOTAL_TIME"))->setLabel(ofToString(clipTimer.totalClipTime()));
+        ((ofxUILabel*)gui->getWidget("CUR_CLIP_TARGET_END_TIME"))->setLabel(ofToString(clipTimer.targetClipEndTime()));
+    }
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-
+    
 }
 
 //--------------------------------------------------------------

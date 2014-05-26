@@ -45,14 +45,16 @@ void ClipTimer::registerPos(float pos){
         timing1.pos = pos;
         timing1.time = curTime;
         timing2.pos = -1.0;
-    } else if((pos - timing1.pos) > 0.05){
+    } else if((curTime - timing1.time) > 0.5){
         timing2.pos = pos;
         timing2.time = curTime;
 
         // we got two timing positions, allowing us to calculate
         // all the information about the specified clip that we need
         ofNotifyEvent(gotTimingEvent);
-        // ofLogVerbose() << "GOT CLIP TIMING - total time: " << ofToString(totalClipTime());
+//        ofLogVerbose() << "GOT CLIP TIMING - total time: " << ofToString(totalClipTime());
+//        ofLogVerbose() << "GOT CLIP TIMING - target end time: " << ofToString(targetClipEndTime());
+        
     }
 }
 
