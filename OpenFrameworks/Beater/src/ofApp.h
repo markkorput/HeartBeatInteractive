@@ -21,7 +21,7 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-		
+
     ofxUICanvas *gui;
     float lastBeat;
     ofEvent<void> beatEvent;
@@ -38,6 +38,7 @@ class ofApp : public ofBaseApp{
     string getOscIP();
     string getOscMessage();
     bool getOscEnabled();
+    bool beatingEnabled();
 
     void sendOscBeat();
     void setupOscSender();

@@ -1,12 +1,12 @@
 <Widget>
     <Kind>8</Kind>
     <Name>BPM</Name>
-    <Value>182.800064087</Value>
+    <Value>290.000000000</Value>
 </Widget>
 <Widget>
     <Kind>2</Kind>
     <Name>BEATING</Name>
-    <Value>1</Value>
+    <Value>0</Value>
 </Widget>
 <Widget>
     <Kind>12</Kind>
@@ -16,7 +16,7 @@
 <Widget>
     <Kind>2</Kind>
     <Name>OSC_OUT_ENABLE</Name>
-    <Value>1</Value>
+    <Value>0</Value>
 </Widget>
 <Widget>
     <Kind>12</Kind>

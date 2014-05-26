@@ -25,16 +25,21 @@ void ofApp::setup(){
 
 //--------------------------------------------------------------
 void ofApp::update(){
-    if(ofGetElapsedTimef() > nextBeatTime()){
+    // beating enabled AND time for a new beat?
+    if(beatingEnabled() && ofGetElapsedTimef() > nextBeatTime()){
+        // for flexibility we use the ofEvent system for beating
         ofNotifyEvent(beatEvent);
+        // set lastBeat to current time and start counting for the next beat
         lastBeat = ofGetElapsedTimef();
     }
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    float value = ofMap(timeSinceLastBeat(), 0, currentTimeBetweenBeats(), 120, 100);
-    ofBackground(value, 100, 100);
+    if(beatingEnabled()){
+        float value = ofMap(timeSinceLastBeat(), 0, currentTimeBetweenBeats(), 120, 100);
+        ofBackground(value, 100, 100);
+    }
 }
 
 //--------------------------------------------------------------
@@ -140,7 +145,9 @@ bool ofApp::getOscEnabled(){
     return ((ofxUIToggle*)gui->getWidget("OSC_OUT_ENABLE"))->getValue();
 }
 
-
+bool ofApp::beatingEnabled(){
+   return ((ofxUIToggle*)gui->getWidget("BEATING"))->getValue();
+}
 
 //--------------------------------------------------------------
 void ofApp::sendOscBeat(){
