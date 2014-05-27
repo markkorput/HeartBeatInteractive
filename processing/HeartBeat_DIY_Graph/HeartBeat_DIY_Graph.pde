@@ -4,7 +4,7 @@ import oscP5.*;
 import netP5.*;
 
 Serial myPort;  // Create object from Serial class
-int val, screen_increment, old_x=0, old_y=0;      // Data received from the serial port
+int screen_increment, old_x=0, old_y=0;      // Data received from the serial port
 String inString;  // Input string from serial port
 int lf = 10;      // ASCII linefeed
 
@@ -36,42 +36,7 @@ void setup()
 }//setup
 
 void manualEvent(){
-     strokeWeight(5);//beef up our white line
-  stroke(255, 255, 255);//make the line white
- 
-  //nothing in here, this is kind of like the void loop in arduino
-   val = (int)(sin(millis()*0.005)*height);
-  //here's where we draw the line on the screen
-  //we need to draw the line from one point to the next
-  //so we have the point we last drew, to the new point
-  //values are written as an x,y system, where x is left to right, left most being 0
-  //y is up and down, BUT 0 is the upmost point, 
-  //so we subtract our value from the screen height to invert
-  //screen increment, is how we progress teh line through the screen
-  line(old_x, old_y, screen_increment, height-val);
-  
-  //store the current x, y as the old x,y, so it is used next time
-  old_x = screen_increment;
-  old_y = height-val;
-  
-  //increment the x coordinate,  you can play with this value to speed things up
-  screen_increment=screen_increment+2;
-  
-  //this is needed to reset things when the line crashes into the end of the screen
-  if(screen_increment>(displayWidth-100)){
-    background(208,24,24); //refresh the screen, erases everything
-    screen_increment=-50; //make the increment back to 0, 
-    //but used 50, so it sweeps better into the screen
-    //reset the old x,y values
-  old_x = -50;
-  old_y = 0;
-  }
- 
-  //  /activeclip/video/opacity/values
-  OscMessage msg = new OscMessage("/layer4/clip4/video/opacity/values");
-  msg.add(map(val, 0, height, 0.0, 1.0)); /* add an int to the osc message */
-  // send the message
-  oscP5.send(msg, resolumeArenaAddress);
+  processValue((int)(sin(millis()*0.005)*height));
 }
 
 void draw(){
@@ -81,13 +46,14 @@ void draw(){
 void serialEvent(Serial myPort) { //this is called whenever data is sent over by the arduino
   inString = myPort.readString();//read in the new data, and store in inString
   inString = trim(inString);//get rid of any crap that isn't numbers, like the line feed
-//  println(inString);
-  val = int(inString);//convert the string into a number we can use
 
+  processValue((int)map(int(inString), 0, 600, 0, height));
+}
+
+void processValue(int val){
   strokeWeight(5);//beef up our white line
   stroke(255, 255, 255);//make the line white
   
-  val = (int)map(val, 0, 400, 0, height);
   //here's where we draw the line on the screen
   //we need to draw the line from one point to the next
   //so we have the point we last drew, to the new point
@@ -110,8 +76,16 @@ void serialEvent(Serial myPort) { //this is called whenever data is sent over by
     screen_increment=-50; //make the increment back to 0, 
     //but used 50, so it sweeps better into the screen
     //reset the old x,y values
-  old_x = -50;
-  old_y = 0;
-  
+    old_x = -50;
+    old_y = 0;
+    
   }// if screen...
-}//serialEvent
+  
+  
+  //  /activeclip/video/opacity/values
+  OscMessage msg = new OscMessage("/layer2/clip1/video/opacity/values");
+  msg.add(map(val, 0, height, 0.0, 1.0)); /* add an int to the osc message */
+  // send the message
+  oscP5.send(msg, resolumeArenaAddress);
+
+}//processValue
