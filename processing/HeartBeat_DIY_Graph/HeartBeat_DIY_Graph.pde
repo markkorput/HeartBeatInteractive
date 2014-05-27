@@ -3,6 +3,7 @@ import processing.serial.*;
 import oscP5.*;
 import netP5.*;
 
+
 Serial myPort;  // Create object from Serial class
 int screen_increment, old_x=0, old_y=0;      // Data received from the serial port
 String inString;  // Input string from serial port
@@ -10,6 +11,10 @@ int lf = 10;      // ASCII linefeed
 
 OscP5 oscP5;
 NetAddress resolumeArenaAddress;
+
+Beat lastBeat = new Beat(0, 0);
+Beat roofBeat = new Beat(0, 0);
+int sampleTime = 50;
 
 void setup() 
 {
@@ -36,21 +41,28 @@ void setup()
 }//setup
 
 void manualEvent(){
-  processValue((int)(sin(millis()*0.005)*height));
+  float val = (sin(millis()*0.005) * height * random(1));
+  processValue((int)val);
+  
 }
 
 void draw(){
-  manualEvent();   
+//  manualEvent();   
 }
 
 void serialEvent(Serial myPort) { //this is called whenever data is sent over by the arduino
   inString = myPort.readString();//read in the new data, and store in inString
   inString = trim(inString);//get rid of any crap that isn't numbers, like the line feed
-
-  processValue((int)map(int(inString), 0, 600, 0, height));
+  int value = (int)map(int(inString), 0, 600, 0, height);
+  processValue(value);
 }
 
 void processValue(int val){
+  drawGraph(val);
+  detectBeat(val);
+}
+
+void drawGraph(int val){
   strokeWeight(5);//beef up our white line
   stroke(255, 255, 255);//make the line white
   
@@ -82,10 +94,29 @@ void processValue(int val){
   }// if screen...
   
   
-  //  /activeclip/video/opacity/values
-  OscMessage msg = new OscMessage("/layer2/clip1/video/opacity/values");
-  msg.add(map(val, 0, height, 0.0, 1.0)); /* add an int to the osc message */
-  // send the message
-  oscP5.send(msg, resolumeArenaAddress);
+//  //  /activeclip/video/opacity/values
+//  OscMessage msg = new OscMessage("/layer2/clip1/video/opacity/values");
+//  msg.add(map(val, 0, height, 0.0, 1.0)); /* add an int to the osc message */
+//  // send the message
+//  oscP5.send(msg, resolumeArenaAddress);
 
 }//processValue
+
+
+void detectBeat(int val){
+  // "roofBeat" is used to keep track of the graphs recent max values
+  if(val > roofBeat.value){
+    roofBeat.init(millis(), val);
+  } else if(millis() > roofBeat.time + sampleTime && roofBeat.time > lastBeat.time + sampleTime) {
+    beat(roofBeat.value);
+  } else{
+    roofBeat.value -= 5;
+  }
+
+}
+
+void beat(int val){
+  lastBeat.init(millis(), val);
+  println("beat at: " + lastBeat.time);
+}  
+
