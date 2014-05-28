@@ -11,6 +11,7 @@ int lf = 10;      // ASCII linefeed
 
 PGraphics canvas;
 OscP5 oscP5;
+Timer resolumeTimer;
 
 Beat lastBeat = new Beat(0, 0);
 Beat roofBeat = new Beat(0, 0);
@@ -38,6 +39,7 @@ void setup()
   // start oscP5, listening for incoming messages at port 7001
   oscP5 = new OscP5(this,7001);
   resolumer = new Resolumer(oscP5, "127.0.0.1", 7000);
+  resolumeTimer = new Timer();
 }//setup
 
 void manualEvent(){
@@ -165,8 +167,10 @@ void oscEvent(OscMessage theOscMessage) {
 //  println(" arg 1: " + theOscMessage.get(0).floatValue());
 //  
 
-//  if(theOscMessage.checkAddrPattern("/layer2/audio/position/values")){
-//    println("Videopos: "+theOscMessage.get(0).floatValue());
-//  }
+  if(theOscMessage.checkAddrPattern("/layer2/audio/position/values")){
+    float t = theOscMessage.get(0).floatValue();
+    println("Videopos: "+t);
+    println("fase: " + resolumeTimer.setTime(t));
+  }
 }
 
