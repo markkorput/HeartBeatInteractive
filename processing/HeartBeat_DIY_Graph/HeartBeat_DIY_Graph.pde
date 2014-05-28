@@ -9,16 +9,19 @@ int screen_increment, old_x=0, old_y=0;      // Data received from the serial po
 String inString;  // Input string from serial port
 int lf = 10;      // ASCII linefeed
 
+
 OscP5 oscP5;
 NetAddress resolumeArenaAddress;
-
 Beat lastBeat = new Beat(0, 0);
 Beat roofBeat = new Beat(0, 0);
-int sampleTime = 50;
+Beat bottomBeat = new Beat(0,0);
+int sampleTime = 30;
+int minBeatTime = 100;
+int minDynamic = 100;
 
 void setup() 
 {
-  size(displayWidth-100, 600);//screen size setup, display width is read into teh program, and I
+  size(displayWidth-300, 200);//screen size setup, display width is read into teh program, and I
   //clipped it a little bit.  The screen height is set to be 600, which matches the scaled data,
   //the arduino will send over
   String portName = Serial.list()[2];//Set the Serial port COM or dev/tty.blah blah
@@ -83,7 +86,7 @@ void drawGraph(int val){
   screen_increment=screen_increment+2;
   
   //this is needed to reset things when the line crashes into the end of the screen
-  if(screen_increment>(displayWidth-100)){
+  if(screen_increment>(width)){
     background(208,24,24); //refresh the screen, erases everything
     screen_increment=-50; //make the increment back to 0, 
     //but used 50, so it sweeps better into the screen
@@ -92,31 +95,61 @@ void drawGraph(int val){
     old_y = 0;
     
   }// if screen...
-  
-  
-//  //  /activeclip/video/opacity/values
-//  OscMessage msg = new OscMessage("/layer2/clip1/video/opacity/values");
-//  msg.add(map(val, 0, height, 0.0, 1.0)); /* add an int to the osc message */
-//  // send the message
-//  oscP5.send(msg, resolumeArenaAddress);
 
 }//processValue
 
 
 void detectBeat(int val){
-  // "roofBeat" is used to keep track of the graphs recent max values
-  if(val > roofBeat.value){
-    roofBeat.init(millis(), val);
-  } else if(millis() > roofBeat.time + sampleTime && roofBeat.time > lastBeat.time + sampleTime) {
-    beat(roofBeat.value);
-  } else{
-    roofBeat.value -= 5;
+//  // "roofBeat" is used to keep track of the graphs recent max values
+//  if(val > roofBeat.value){
+//    roofBeat.init(millis(), val);
+//  } else if(millis() > roofBeat.time + sampleTime)
+//      && roofBeat.time > lastBeat.time + minBeatTime) {
+//    beat(roofBeat.value);
+//  } else{
+//    roofBeat.value -= 5;
+//  }
+
+  // bottomBeat is used to keep track of the graphcs recent min value...
+  if(val < (int)(bottomBeat.value + bottomBeat.timeSince()*0.05) ){
+    // drop the bottom
+    bottomBeat.value = val;
+    bottomBeat.time = millis();
   }
 
+  // "roofBeat" is used to keep track of the graphs recent max values
+  if(val > (int)(roofBeat.value - roofBeat.timeSince()*0.05) ){
+    // raise the roof
+    roofBeat.value = val;
+    int curTime = millis();
+    
+    // beatconsider it a valid beat if we raised the roof,
+      // and minBeatTime has passed since last beat
+    if(curTime > lastBeat.time + minBeatTime &&
+        // and a bottomBeat has been registered since last roofBeat
+        bottomBeat.time > roofBeat.time &&
+        // and there was at least 'minDynamic' difference between the bottomBeat and the roofBeat
+        bottomBeat.value + minDynamic < roofBeat.value){
+      beat(val);
+    }
+
+    roofBeat.time = curTime;
+  }
 }
 
 void beat(int val){
-  lastBeat.init(millis(), val);
-  println("beat at: " + lastBeat.time);
+  int curTime = millis();
+  println("beat (ms): " + (curTime - lastBeat.time));
+  lastBeat.init(curTime, val);
+  
+  strokeWeight(1);//beef up our white line
+  stroke(0);//make the line white
+  line(screen_increment, 0, screen_increment, height);
+
+//  //  /activeclip/video/opacity/values
+//  OscMessage msg = new OscMessage("/layer2/clip1/video/opacity/values");
+//  msg.add(map(val, 0, height, 0.0, 1.0)); /* add an int to the osc message */
+//  // send the message
+//  oscP5.send(msg, resolumeArenaAddress);
 }  
 

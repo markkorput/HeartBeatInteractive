@@ -11,5 +11,7 @@ class Beat{
     value = _value;
   }
 
-  
+  int timeSince(){
+    return millis() - time;
+  }
 }
