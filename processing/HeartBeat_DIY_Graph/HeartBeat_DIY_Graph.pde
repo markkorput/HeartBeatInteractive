@@ -154,8 +154,12 @@ void beat(int val){
 
   resolumer.beatSound();
   resolumer.shake();
+  println("timer f:" + resolumeTimer.fase);
+  if(resolumeTimer.fase == 3){
+    resolumer.f3(resolumeTimer.t);
+  }
 //  resolumer.fishEye();
-}  
+}
 
 
 /* incoming osc message are forwarded to the oscEvent method. */
@@ -169,8 +173,10 @@ void oscEvent(OscMessage theOscMessage) {
 
   if(theOscMessage.checkAddrPattern("/layer2/audio/position/values")){
     float t = theOscMessage.get(0).floatValue();
-    println("Videopos: "+t);
-    println("fase: " + resolumeTimer.setTime(t));
+    resolumeTimer.setTime(t);
+//    println("Videopos: "+t);
+//    println("fase time: " + resolumeTimer.setTime(t));
+//    println("fase time: " + resolumeTimer.faseTime());
   }
 }
 

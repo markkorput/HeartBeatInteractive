@@ -30,15 +30,20 @@ class Resolumer{
     oscP5.send(msg, netAddress);
   }
 
-  void oscSendBool(String msgString, int value){
+  void oscSendInt(String msgString, int value){
     OscMessage msg = new OscMessage(msgString);
     msg.add(value);
     oscP5.send(msg, netAddress);
   }
 
+  void oscSendBool(String msgString, int value){
+    oscSendInt(msgString, value);
+  }
+
   void update(){
     updateShake();
     updateFishEye();
+    updatef3();
   }
   
   int shakeAt = 0;
@@ -89,5 +94,28 @@ class Resolumer{
     }
     
     oscSendFloat("/activeclip/video/effect2/param1/values", map(t, fishEyeAt+fishEyeDuration*0.5, fishEyeAt+fishEyeDuration, fishEyeIntensity, 0.0));
+  }
+
+
+
+  int f3At = 0;
+  int f3Duration = 0;
+  
+  void f3(float t){
+    f3At = millis();
+    f3Duration = (int)random(500, 2000);
+    // enable effect
+    oscSendFloat("/layer3/clip1/audio/position/values", t);
+    oscSendInt("/layer3/clip1/audio/position/direction", 1);
+//    oscSendFloat("/layer3/clip1/audio/volume/values", 1.0);
+println("f3");
+  }
+  
+  void updatef3(){
+    if(f3At == 0 || millis() < f3At + f3Duration) return;
+    // disable shaking again
+//    oscSendFloat("/layer3/clip1/audio/volume/values", 1.0);
+    oscSendInt("/layer3/clip1/audio/position/direction", 2);
+    f3At = 0;
   }
 }
