@@ -9,7 +9,7 @@ int screen_increment, old_x=0, old_y=0;      // Data received from the serial po
 String inString;  // Input string from serial port
 int lf = 10;      // ASCII linefeed
 
-
+PGraphics canvas;
 OscP5 oscP5;
 
 Beat lastBeat = new Beat(0, 0);
@@ -24,6 +24,8 @@ Resolumer resolumer;
 void setup() 
 {
   size(displayWidth-300, 200);//screen size setup, display width is read into teh program, and I
+  canvas = createGraphics(width, height);
+
   //clipped it a little bit.  The screen height is set to be 600, which matches the scaled data,
   //the arduino will send over
   String portName = Serial.list()[2];//Set the Serial port COM or dev/tty.blah blah
@@ -47,6 +49,8 @@ void manualEvent(){
 void draw(){
   manualEvent();
   resolumer.update();
+  
+  image(canvas, 0,0);
 }
 
 void serialEvent(Serial myPort) { //this is called whenever data is sent over by the arduino
@@ -62,9 +66,10 @@ void processValue(int val){
 }
 
 void drawGraph(int val){
-  strokeWeight(5);//beef up our white line
-  stroke(255, 255, 255);//make the line white
-  
+  canvas.beginDraw();
+  canvas.strokeWeight(5);//beef up our white line
+  canvas.stroke(255, 255, 255);//make the line white
+
   //here's where we draw the line on the screen
   //we need to draw the line from one point to the next
   //so we have the point we last drew, to the new point
@@ -72,7 +77,7 @@ void drawGraph(int val){
   //y is up and down, BUT 0 is the upmost point, 
   //so we subtract our value from the screen height to invert
   //screen increment, is how we progress teh line through the screen
-  line(old_x, old_y, screen_increment, height-val);
+  canvas.line(old_x, old_y, screen_increment, height-val);
   
   //store the current x, y as the old x,y, so it is used next time
   old_x = screen_increment;
@@ -83,7 +88,7 @@ void drawGraph(int val){
   
   //this is needed to reset things when the line crashes into the end of the screen
   if(screen_increment>(width)){
-    background(208,24,24); //refresh the screen, erases everything
+    canvas.background(208,24,24); //refresh the screen, erases everything
     screen_increment=-50; //make the increment back to 0, 
     //but used 50, so it sweeps better into the screen
     //reset the old x,y values
@@ -91,7 +96,7 @@ void drawGraph(int val){
     old_y = 0;
     
   }// if screen...
-
+  canvas.endDraw();
 }//processValue
 
 
@@ -139,12 +144,29 @@ void beat(int val){
 //  println("beat (ms): " + (curTime - lastBeat.time));
   lastBeat.init(curTime, val);
   
-  strokeWeight(1);//beef up our white line
-  stroke(0);//make the line white
-  line(screen_increment, 0, screen_increment, height);
+  canvas.beginDraw();
+  canvas.strokeWeight(1);//beef up our white line
+  canvas.stroke(0);//make the line white
+  canvas.line(screen_increment, 0, screen_increment, height);
+  canvas.endDraw();
 
   resolumer.beatSound();
   resolumer.shake();
+//  resolumer.fishEye();
 }  
 
+
+/* incoming osc message are forwarded to the oscEvent method. */
+void oscEvent(OscMessage theOscMessage) {
+  /* print the address pattern and the typetag of the received OscMessage */
+//  print("### received an osc message.");
+//  print(" addrpattern: "+theOscMessage.addrPattern());
+//  println(" typetag: "+theOscMessage.typetag());
+//  println(" arg 1: " + theOscMessage.get(0).floatValue());
+//  
+
+//  if(theOscMessage.checkAddrPattern("/layer2/audio/position/values")){
+//    println("Videopos: "+theOscMessage.get(0).floatValue());
+//  }
+}
 
