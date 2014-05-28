@@ -11,13 +11,15 @@ int lf = 10;      // ASCII linefeed
 
 
 OscP5 oscP5;
-NetAddress resolumeArenaAddress;
+
 Beat lastBeat = new Beat(0, 0);
 Beat roofBeat = new Beat(0, 0);
 Beat bottomBeat = new Beat(0,0);
 int sampleTime = 30;
 int minBeatTime = 100;
 int minDynamic = 100;
+
+Resolumer resolumer;
 
 void setup() 
 {
@@ -33,14 +35,7 @@ void setup()
   
   // start oscP5, listening for incoming messages at port 7001
   oscP5 = new OscP5(this,7001);
-  
-  //  myRemoteLocation is a NetAddress. a NetAddress takes 2 parameters,
-  //  an ip address and a port number. myRemoteLocation is used as parameter in
-  //  oscP5.send() when sending osc packets to another computer, device, 
-  //  application. usage see below. for testing purposes the listening port
-  //  and the port of the remote location address are the same, hence you will
-  //  send messages back to this sketch.
-  resolumeArenaAddress = new NetAddress("127.0.0.1",7000);
+  resolumer = new Resolumer(oscP5, "127.0.0.1", 7000);
 }//setup
 
 void manualEvent(){
@@ -137,19 +132,17 @@ void detectBeat(int val){
   }
 }
 
+
 void beat(int val){
   int curTime = millis();
-  println("beat (ms): " + (curTime - lastBeat.time));
+//  println("beat (ms): " + (curTime - lastBeat.time));
   lastBeat.init(curTime, val);
   
   strokeWeight(1);//beef up our white line
   stroke(0);//make the line white
   line(screen_increment, 0, screen_increment, height);
 
-//  //  /activeclip/video/opacity/values
-//  OscMessage msg = new OscMessage("/layer2/clip1/video/opacity/values");
-//  msg.add(map(val, 0, height, 0.0, 1.0)); /* add an int to the osc message */
-//  // send the message
-//  oscP5.send(msg, resolumeArenaAddress);
+  resolumer.beatSound();
 }  
+
 
