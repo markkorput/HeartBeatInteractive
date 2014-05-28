@@ -45,14 +45,15 @@ void manualEvent(){
 }
 
 void draw(){
-//  manualEvent();   
+  manualEvent();
+  resolumer.update();
 }
 
 void serialEvent(Serial myPort) { //this is called whenever data is sent over by the arduino
   inString = myPort.readString();//read in the new data, and store in inString
   inString = trim(inString);//get rid of any crap that isn't numbers, like the line feed
   int value = (int)map(int(inString), 0, 600, 0, height);
-  processValue(value);
+//  processValue(value);
 }
 
 void processValue(int val){
@@ -143,6 +144,7 @@ void beat(int val){
   line(screen_increment, 0, screen_increment, height);
 
   resolumer.beatSound();
+  resolumer.shake();
 }  
 
 
