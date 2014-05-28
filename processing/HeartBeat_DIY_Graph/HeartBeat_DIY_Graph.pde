@@ -38,8 +38,8 @@ void setup()
   
   // start oscP5, listening for incoming messages at port 7001
   oscP5 = new OscP5(this,7001);
-  resolumer = new Resolumer(oscP5, "127.0.0.1", 7000);
   resolumeTimer = new Timer();
+  resolumer = new Resolumer(oscP5, "127.0.0.1", 7000, resolumeTimer);
 }//setup
 
 void manualEvent(){
@@ -49,7 +49,7 @@ void manualEvent(){
 }
 
 void draw(){
-  manualEvent();
+//  manualEvent();
   resolumer.update();
   
   image(canvas, 0,0);
@@ -59,7 +59,7 @@ void serialEvent(Serial myPort) { //this is called whenever data is sent over by
   inString = myPort.readString();//read in the new data, and store in inString
   inString = trim(inString);//get rid of any crap that isn't numbers, like the line feed
   int value = (int)map(int(inString), 0, 600, 0, height);
-//  processValue(value);
+  processValue(value);
 }
 
 void processValue(int val){
@@ -152,13 +152,7 @@ void beat(int val){
   canvas.line(screen_increment, 0, screen_increment, height);
   canvas.endDraw();
 
-  resolumer.beatSound();
-  resolumer.shake();
-  println("timer f:" + resolumeTimer.fase);
-  if(resolumeTimer.fase == 3){
-    resolumer.f3(resolumeTimer.t);
-  }
-//  resolumer.fishEye();
+  resolumer.beat();
 }
 
 
