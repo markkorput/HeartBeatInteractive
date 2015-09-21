@@ -1,3 +1,0 @@
-
-Easy_Pulse_PPG_Analyzer_V1_0
-Easy_Pulse_PPG_Analyzer_V1_0.jar,core.jar,RXTXcomm.jar,serial.jar
